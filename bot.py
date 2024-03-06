@@ -27,11 +27,11 @@ def run_discord_bot():
         if message.author == client.user:
             return
 
-        print(message.content)
         username = str(message.author)
         user_message = str(message.content)
         channel = str(message.channel)
 
+        # Uncomment print statement to log messages in console
         # print(f"{username} said '{user_message}' in {channel}")
 
         if user_message[0] == '?':
