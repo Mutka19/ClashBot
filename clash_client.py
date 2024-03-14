@@ -2,12 +2,13 @@ import requests
 import json
 import os
 from dotenv import load_dotenv, find_dotenv
-from main import Base
 from ClanWarPlayerRecord import ClanWarPlayerRecord
+from ClanWarAttackRecord import ClanWarAttackRecord
+from ClanMember import ClanMember
 from DatabaseHandler import DatabaseHandler
 
 
-class ClashClient(Base):
+class ClashClient:
     def __init__(self):
         # Get api key from env and set base url
         load_dotenv(find_dotenv())
@@ -17,6 +18,12 @@ class ClashClient(Base):
 
     def fetch_clan_info(self, clan_tag: str) -> dict:
         url = f"{self.base_url}/clans/%23{clan_tag}"
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+        response = requests.get(url, headers=headers)
+        return response.json()
+
+    def fetch_clan_members(self, clan_tag: str) -> dict:
+        url = f"{self.base_url}/clans/%23{clan_tag}/members"
         headers = {"Authorization": f"Bearer {self.api_key}"}
         response = requests.get(url, headers=headers)
         return response.json()
@@ -32,6 +39,20 @@ class ClashClient(Base):
         headers = {"Authorization": f"Bearer {self.api_key}"}
         response = requests.get(url, headers=headers)
         return response.json()
+
+    def record_clan_members(self, clan_tag: str):
+        clan_members = self.fetch_clan_members(clan_tag)["items"]
+        for member in clan_members:
+            self.db.add_object(
+                ClanMember(
+                    id=member["tag"],
+                    name=member["name"],
+                    ranking=member["clanRank"],
+                    position=member["role"]
+                )
+            )
+        self.db.commit()
+
 
     # Record percentage of attacks player has used in wars
     def record_player_clan_war_stats(self, clan_tag: str):
@@ -49,10 +70,12 @@ class ClashClient(Base):
                 for attack in member["attacks"]:
                     defender = war["opponent"]["members"][attack["defenderTag"]]
                     self.db.session.add_object(
-                        stars=attack["stars"],
-                        percentage=attack["destructionPercentage"],
-                        town_hall_diff=defender["townhallLevel"] - member["townhallLevel"],
-                        cw_player_record_id=war_player_record.id
+                        ClanWarAttackRecord(
+                            stars=attack["stars"],
+                            percentage=attack["destructionPercentage"],
+                            town_hall_diff=defender["townhallLevel"] - member["townhallLevel"],
+                            cw_player_record_id=war_player_record.id
+                        )
                     )
                     war_player_record.stars += attack["stars"]
                     print(attack["stars"])
