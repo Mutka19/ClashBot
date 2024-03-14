@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from main import engine
+from models import engine
 
 
 class DatabaseHandler:
@@ -15,3 +15,4 @@ class DatabaseHandler:
 
     def close(self):
         self.session.close()
+
