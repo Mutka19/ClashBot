@@ -11,5 +11,5 @@ class ClanWarPlayerRecord(Base):
     attacks_used = Column(SmallInteger, nullable=False)
     stars = Column(SmallInteger, nullable=False)
     record_status = Column(String, nullable=False)
-    member_id = Column(String, ForeignKey('members.id'), nullable=False, index=True)
-    war_id = Column(String, ForeignKey('wars.id'), index=True)
+    war_id = Column(String, index=True)
+    member_id = Column(String, ForeignKey('ClanMembers.id'), nullable=False, index=True)
