@@ -2,6 +2,10 @@ import discord
 import responses
 import os
 from dotenv import load_dotenv, find_dotenv
+from clash_client import ClashClient
+
+clash = None
+
 
 async def send_message(message, user_message, is_private):
     try:
@@ -10,13 +14,18 @@ async def send_message(message, user_message, is_private):
     except Exception as e:
         print(e)
 
+
 def run_discord_bot():
+    # Initialize discord bot service
     load_dotenv(find_dotenv())
     token = os.getenv("DISCORD_TOKEN")
     intents = discord.Intents.default()
     intents.messages = True
     intents.message_content = True
     client = discord.Client(intents=intents)
+
+    # Initialize clash of clan client
+    clash = ClashClient()
 
     @client.event
     async def on_ready():
