@@ -192,10 +192,8 @@ class ClashClient:
         if member is None:
             return
 
-        # Query for all war records that the member has in the database
-        war_records = (
-            self.db.query(ClanWarPlayerRecord).filter_by(member_id=member.id).all()
-        )
+        # Get all war records that the member has in the database
+        war_records = self.get_player_records(member_id)
 
         # Initialize variable to keep count of data that we will use to calculate efficiency
         total_wars = len(war_records)
@@ -206,12 +204,8 @@ class ClashClient:
         for record in war_records:
             # If the war record contains any attacks
             if record.attacks_used > 0:
-                # Query for attacks that are related to given record
-                attacks = (
-                    self.db.query(ClanWarAttackRecord)
-                    .filter_by(cw_player_record_id=record)
-                    .all()
-                )
+                # Get all attacks that are related to given record
+                attacks = self.get_attack_records(record.id)
 
                 # Update total number of attacks used
                 total_attacks_used += len(attacks)
