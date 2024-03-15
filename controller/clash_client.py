@@ -143,7 +143,8 @@ class ClashClient:
                         ClanWarAttackRecord(
                             stars=attack["stars"],
                             percentage=attack["destructionPercentage"],
-                            town_hall_diff=defender["townhallLevel"] - member["townhallLevel"],
+                            town_hall_diff=defender["townhallLevel"]
+                            - member["townhallLevel"],
                             cw_player_record_id=war_player_record.id,
                         )
                     )
@@ -192,7 +193,9 @@ class ClashClient:
             return
 
         # Query for all war records that the member has in the database
-        war_records = self.db.query(ClanWarPlayerRecord).filter_by(member_id=member.id).all()
+        war_records = (
+            self.db.query(ClanWarPlayerRecord).filter_by(member_id=member.id).all()
+        )
 
         # Initialize variable to keep count of data that we will use to calculate efficiency
         total_wars = len(war_records)
@@ -204,7 +207,11 @@ class ClashClient:
             # If the war record contains any attacks
             if record.attacks_used > 0:
                 # Query for attacks that are related to given record
-                attacks = self.db.query(ClanWarAttackRecord).filter_by(cw_player_record_id=record).all()
+                attacks = (
+                    self.db.query(ClanWarAttackRecord)
+                    .filter_by(cw_player_record_id=record)
+                    .all()
+                )
 
                 # Update total number of attacks used
                 total_attacks_used += len(attacks)
