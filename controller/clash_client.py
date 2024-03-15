@@ -124,5 +124,19 @@ class ClashClient:
                 )
             self.db.session.commit()
 
-    def get_members(self) -> list:
+    def get_all_members(self) -> list:
         return self.db.query(ClanMember).all()
+
+    def get_player_records(self, member_id: str) -> list:
+        return (
+            self.db.query(ClanWarPlayerRecord)
+            .filter(ClanWarPlayerRecord.member_id == member_id)
+            .all()
+        )
+
+    def get_attack_records(self, cw_player_record_id: str) -> list:
+        return (
+            self.db.query(ClanWarAttackRecord)
+            .filter(ClanWarAttackRecord.cw_player_record_id == cw_player_record_id)
+            .all()
+        )
