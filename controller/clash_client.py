@@ -182,3 +182,62 @@ class ClashClient:
             .filter(ClanWarAttackRecord.cw_player_record_id == cw_player_record_id)
             .all()
         )
+
+    def update_efficiency(self, member_id: str) -> None:
+        # Query clan member by id
+        member = self.db.query(ClanMember).filter_by(id=member_id).first()
+
+        # If the member is not found return
+        if member is None:
+            return
+
+        # Query for all war records that the member has in the database
+        war_records = self.db.query(ClanWarPlayerRecord).filter_by(member_id=member.id).all()
+
+        # Initialize variable to keep count of data that we will use to calculate efficiency
+        total_wars = len(war_records)
+        total_attacks_used = 0
+        weighted_stars = 0
+
+        # Update statistic for each war record the player has
+        for record in war_records:
+            # If the war record contains any attacks
+            if record.attacks_used > 0:
+                # Query for attacks that are related to given record
+                attacks = self.db.query(ClanWarAttackRecord).filter_by(cw_player_record_id=record).all()
+
+                # Update total number of attacks used
+                total_attacks_used += len(attacks)
+
+                # For each attack in record update weighted stars
+                for attack in attacks:
+                    # Get town hall difference between attacker and defender
+                    diff = attack.town_hall_diff
+                    # If member attacked a town hall that is 2+ levels higher than their own
+                    if diff > 1:
+                        # Reward player by weighing stars earned higher
+                        weighted_stars += attack.stars * diff
+                    # If member attacked a town hall +/- 1 level of members
+                    elif diff >= -1:
+                        # Stars are not weighted
+                        weighted_stars += attack.stars
+                    # If member attacks a town hall 2+ levels lower than their own
+                    else:
+                        # Weight stars lower
+                        weighted_stars += max(0, attack.stars + diff)
+
+        # Get participation (attacks used) / (total potential attacks)
+        participation = float(total_attacks_used) / (total_wars * 2)
+
+        # Get stars (weighted stars earned) / (total potential stars)
+        stars = float(weighted_stars) / (total_wars * 6)
+
+        # Efficiency = (participation * 0.5) + (stars * 0.5)
+        efficiency = (participation + stars) / 2
+
+        # Updated member participation and efficiency
+        member.participation = min(100.00, participation)
+        member.efficiency = min(100.00, efficiency)
+
+        # Commit changes in member participation to database
+        self.db.commit()
