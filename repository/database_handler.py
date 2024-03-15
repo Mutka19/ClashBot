@@ -18,4 +18,3 @@ class DatabaseHandler:
 
     def close(self):
         self.session.close()
-

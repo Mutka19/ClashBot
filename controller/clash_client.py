@@ -12,7 +12,7 @@ class ClashClient:
         # Get api key from env and set base url
         load_dotenv(find_dotenv())
         self.base_url = "https://api.clashofclans.com/v1"
-        self.api_key = os.getenv('CLASH_API_KEY')
+        self.api_key = os.getenv("CLASH_API_KEY")
 
         # Setup database handler
         self.db = DatabaseHandler()
@@ -80,7 +80,7 @@ class ClashClient:
                     id=member["tag"],
                     name=member["name"],
                     ranking=member["clanRank"],
-                    position=member["role"]
+                    position=member["role"],
                 )
             )
         self.db.commit()
@@ -98,7 +98,7 @@ class ClashClient:
                     stars=0,
                     record_status="activate",
                     member_id=member["tag"],
-                    war_id=war["opponent"]["tag"]
+                    war_id=war["opponent"]["tag"],
                 )
                 for attack in member["attacks"]:
                     defender = war["opponent"]["members"][attack["defenderTag"]]
@@ -106,8 +106,9 @@ class ClashClient:
                         ClanWarAttackRecord(
                             stars=attack["stars"],
                             percentage=attack["destructionPercentage"],
-                            town_hall_diff=defender["townhallLevel"] - member["townhallLevel"],
-                            cw_player_record_id=war_player_record.id
+                            town_hall_diff=defender["townhallLevel"]
+                            - member["townhallLevel"],
+                            cw_player_record_id=war_player_record.id,
                         )
                     )
                     war_player_record.stars += attack["stars"]
@@ -118,7 +119,7 @@ class ClashClient:
                         stars=0,
                         record_status="active",
                         member_id=member["tag"],
-                        war_id=war["opponent"]["tag"]
+                        war_id=war["opponent"]["tag"],
                     )
                 )
             self.db.session.commit()
