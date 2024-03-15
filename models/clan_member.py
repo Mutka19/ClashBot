@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, SmallInteger
-from models import Base
+from repository.db_model import Base
 
 
 class ClanMember(Base):

@@ -1,11 +1,10 @@
 import requests
-import json
 import os
 from dotenv import load_dotenv, find_dotenv
-from clan_war_player_record import ClanWarPlayerRecord
-from clan_war_attack_record import ClanWarAttackRecord
-from clan_member import ClanMember
-from database_handler import DatabaseHandler
+from models.clan_war_player_record import ClanWarPlayerRecord
+from models.clan_war_attack_record import ClanWarAttackRecord
+from models.clan_member import ClanMember
+from repository.database_handler import DatabaseHandler
 
 
 class ClashClient:

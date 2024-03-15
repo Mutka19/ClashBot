@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, ForeignKey, SmallInteger
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from models import Base
+from repository.db_model import Base
 
 
 class ClanWarPlayerRecord(Base):
