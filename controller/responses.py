@@ -2,8 +2,9 @@ from bot import clash
 
 
 def handle_response(message) -> str:
-    if message == "!help":
-        return "I am a bot that can help you with your Clash of Clans stats!\n Currently you can use commands 'clanstats' to get your clans stats"
+    if message == "/help":
+        return "I am a bot that can help you with your Clash of Clans stats!"
+
     message = message.split()
 
     if message[0] == "/setup" and len(message) == 2:
