@@ -47,7 +47,7 @@ class ClashClient:
         response = requests.get(url, headers=headers)
 
         # Return JSON for response
-        return response.json()
+        return response.json()["items"]
 
     def fetch_my_members(self) -> dict:
         # Check if clan_tag has been set, if not return empty list
