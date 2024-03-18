@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from db_model import engine
+from repository.db_model import engine
 
 
 class DatabaseHandler:
