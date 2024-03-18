@@ -52,7 +52,7 @@ class ClashClient:
     def fetch_my_members(self) -> dict:
         # Check if clan_tag has been set, if not return empty list
         if self.__clan_tag is not None:
-            return self.fetch_clan_info(self.__clan_tag)
+            return self.fetch_clan_members(self.__clan_tag)
         else:
             return {}
 
