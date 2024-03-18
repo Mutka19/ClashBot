@@ -99,7 +99,7 @@ class ClashClient:
             return
 
         # Use fetch clan members to return list of all clan members and their stats
-        clan_members = self.fetch_clan_members(self.__clan_tag)["items"]
+        clan_members = self.fetch_clan_members(self.__clan_tag)
 
         # For each clan member add a clanmember object in database
         for member in clan_members:
