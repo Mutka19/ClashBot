@@ -7,16 +7,18 @@ class Responses:
 
     def handle_response(self, message) -> str:
         if message == "/help":
-            return ("I am a bot that can help you with your Clash of Clans stats!\n\n" +
-                    "You have access to the following commands:\n" +
-                    "/clan update - updates the clans member database\n" +
-                    "/efficiency update - updates the efficiency ratings of every clan member\n" +
-                    "/help - shows this help message\n" +
-                    "/member + (clan member name or id) - shows the members stats\n" +
-                    "/members - shows all the names of the members of your clan\n" +
-                    "/members + (clan tag) - shows the names of the members of the tagged clan\n" +
-                    "/war update - makes a record of the current war and updates member stats when war has ended\n\n" +
-                    "And more commands are on the way!")
+            return (
+                "I am a bot that can help you with your Clash of Clans stats!\n\n"
+                + "You have access to the following commands:\n"
+                + "/clan update - updates the clans member database\n"
+                + "/efficiency update - updates the efficiency ratings of every clan member\n"
+                + "/help - shows this help message\n"
+                + "/member + (clan member name or id) - shows the members stats\n"
+                + "/members - shows all the names of the members of your clan\n"
+                + "/members + (clan tag) - shows the names of the members of the tagged clan\n"
+                + "/war update - makes a record of the current war and updates member stats when war has ended\n\n"
+                + "And more commands are on the way!"
+            )
 
         message = message.split()
 
@@ -37,21 +39,33 @@ class Responses:
                 member = self.clash_client.get_member_by_name(message[1])
 
             if member:
-                member_string = (f"Name: {member.name}\n" +
-                                 f"Clan Role: {member.position}\n" +
-                                 f"Efficiency: {member.efficiency}\n" +
-                                 f"Participation: {member.participation}\n" +
-                                 f"Clan Rank: {member.ranking}")
+                member_string = (
+                    f"Name: {member.name}\n"
+                    + f"Clan Role: {member.position}\n"
+                    + f"Efficiency: {member.efficiency}\n"
+                    + f"Participation: {member.participation}\n"
+                    + f"Clan Rank: {member.ranking}"
+                )
 
             return member_string if member is not None else "Member not found."
 
         if message[0] == "/members" and (len(message) == 1 or len(message) == 2):
             if len(message) == 1:
-                return ", ".join([member["name"] for member in self.clash_client.fetch_my_members()])
+                return ", ".join(
+                    [
+                        str(member.name) + str(member.efficiency)
+                        for member in self.clash_client.get_all_members()
+                    ]
+                )
             else:
                 if message[1][0] == "#":
                     message[1] = message[1][1:]
-                return ", ".join([member["name"] for member in self.clash_client.fetch_clan_members(message[1])])
+                return ", ".join(
+                    [
+                        member["name"]
+                        for member in self.clash_client.fetch_clan_members(message[1])
+                    ]
+                )
 
         if message[0] == "/setup" and len(message) == 2:
             # If hashtag on clan tag remove it and continue
