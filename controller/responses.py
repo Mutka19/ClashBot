@@ -11,17 +11,21 @@ class Responses:
 
         message = message.split()
 
-        if message[0] == "/setup" and len(message) == 2:
-            # If hashtag on clan tag remove it and continue
+        if message[0] == "/member" and len(message) == 2:
+            member = None
             if message[1][0] == "#":
-                message[1] = message[1][1:]
-
-            # If clan cannot be reached by api
-            if "reason" in self.clash_client.fetch_clan_info(message[1]):
-                return "Clan not found."
+                member = self.clash_client.get_member_by_id(message[1][1:])
             else:
-                self.clash_client.set_clan(message[1])
-                return "Clan found and set."
+                member = self.clash_client.get_member_by_name(message[1])
+
+            if member:
+                member_string = (f"Name: {member.name}\n" +
+                                f"Clan Role: {member.position}\n" +
+                                f"Efficiency: {member.efficiency}\n" +
+                                f"Participation: {member.participation}\n" +
+                                f"Clan Rank: {member.ranking}")
+
+            return member_string if member is not None else "Member not found."
 
         if message[0] == "/members" and (len(message) == 1 or len(message) == 2):
             if len(message) == 1:
