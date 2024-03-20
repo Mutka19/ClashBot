@@ -9,6 +9,8 @@ class Responses:
         if message == "/help":
             return ("I am a bot that can help you with your Clash of Clans stats!\n\n" +
                     "You have access to the following commands:\n" +
+                    "/clan update - updates the clans member database\n" +
+                    "/efficiency update - updates the efficiency ratings of every clan member\n" +
                     "/help - shows this help message\n" +
                     "/member + (clan member name or id) - shows the members stats\n" +
                     "/members - shows all the names of the members of your clan\n" +
@@ -17,6 +19,15 @@ class Responses:
                     "And more commands are on the way!")
 
         message = message.split()
+
+        if message[0] == "/clan" and message[1] == "update":
+            self.clash_client.record_clan_members()
+            return "Clan database updated."
+
+        if message[0] == "/efficiency" and message[1] == "update":
+            if len(message) == 2:
+                self.clash_client.update_clan_efficiency()
+            return "Clan Efficiency has been updated."
 
         if message[0] == "/member" and len(message) == 2:
             member = None
@@ -27,10 +38,10 @@ class Responses:
 
             if member:
                 member_string = (f"Name: {member.name}\n" +
-                                f"Clan Role: {member.position}\n" +
-                                f"Efficiency: {member.efficiency}\n" +
-                                f"Participation: {member.participation}\n" +
-                                f"Clan Rank: {member.ranking}")
+                                 f"Clan Role: {member.position}\n" +
+                                 f"Efficiency: {member.efficiency}\n" +
+                                 f"Participation: {member.participation}\n" +
+                                 f"Clan Rank: {member.ranking}")
 
             return member_string if member is not None else "Member not found."
 
