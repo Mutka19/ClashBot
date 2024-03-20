@@ -103,16 +103,35 @@ class ClashClient:
         # Use fetch clan members to return list of all clan members and their stats
         clan_members = self.fetch_clan_members(self.__clan_tag)
 
+        # Get all members from database to compare to fetched list
+        database_members = self.get_all_members()
+
+        # Extract tags from database members
+        member_tags = [member.id for member in database_members]
+
         # For each clan member add a clanmember object in database
         for member in clan_members:
-            self.__db.add_object(
-                ClanMember(
-                    id=member["tag"],
-                    name=member["name"],
-                    ranking=member["clanRank"],
-                    position=member["role"],
+            # If player is already in database update their stats
+            if member["tag"] in member_tags:
+                member_tags.remove(member["tag"])
+                clan_member = self.get_member_by_id(member["tag"])
+                clan_member.rank = member["clanRank"]
+                clan_member.position = member["role"]
+            # If player is new create new database entry for them
+            else:
+                self.__db.add_object(
+                    ClanMember(
+                        id=member["tag"],
+                        name=member["name"],
+                        ranking=member["clanRank"],
+                        position=member["role"],
+                    )
                 )
-            )
+
+        # Tag any players that have left clan as nonMembers but keep their data in case they rejoin
+        for non_member_tag in member_tags:
+            non_member = self.get_member_by_id(non_member_tag)
+            non_member.position = "nonMember"
 
         # Commit clan member objects to database
         self.__db.commit()
@@ -208,7 +227,8 @@ class ClashClient:
         self.__db.commit()
 
     def get_all_members(self) -> list:
-        return self.__db.query(ClanMember).all()
+        member_history = self.__db.query(ClanMember).all()
+        return [member if member.position != "nonMember" else None for member in member_history]
 
     def get_member_by_id(self, member_id: str) -> ClanMember:
         return self.__db.query(ClanMember).filter(ClanMember.id == member_id).first()
