@@ -1,9 +1,11 @@
 import requests
 import os
+from dateutil import parser
 from dotenv import load_dotenv, find_dotenv
 from models.clan_war_player_record import ClanWarPlayerRecord
 from models.clan_war_attack_record import ClanWarAttackRecord
 from models.clan_member import ClanMember
+from models.war_record import WarRecord
 from repository.database_handler import DatabaseHandler
 
 
@@ -166,6 +168,30 @@ class ClashClient:
 
             # Commit all records to database
             self.__db.session.commit()
+
+    def record_war(self) -> None:
+        # Fetch current war with clash of clans api
+        war = self.fetch_current_clan_war(self.__clan_tag)
+
+        # Return without accessing db if clan is not in war, preparing for war or war ended
+        if war["state"] not in ["inWar", "preparation", "ended"]:
+            print("No War")
+            return
+
+        # Create war record with null result
+        war_record = WarRecord(
+            id=war["opponent"]["tag"],
+            end_time=parser.parse(war["endTime"]),
+            result=None,
+        )
+
+        if war["state"] == "ended":
+            war_record.result = war["result"]
+            self.record_player_clan_war_stats()
+
+        self.__db.add_object(war_record)
+
+        self.__db.session.commit()
 
     def get_all_members(self) -> list:
         return self.__db.query(ClanMember).all()
