@@ -178,6 +178,13 @@ class ClashClient:
             print("No War")
             return
 
+        # Query database to determine whether a record for this war already exists
+        query = self.__db.query(WarRecord).filter(WarRecord.id == war["opponent"]["tag"]).first()
+
+        # If there already exists a record, and it has a result, do not update database
+        if query is not None and query.result is not None:
+            return
+
         # Create war record with null result
         war_record = WarRecord(
             id=war["opponent"]["tag"],
@@ -185,13 +192,16 @@ class ClashClient:
             result=None,
         )
 
+        # If war has ended and hs result update war record and create player records
         if war["state"] == "ended":
             war_record.result = war["result"]
             self.record_player_clan_war_stats()
 
+        # Add war record to database
         self.__db.add_object(war_record)
 
-        self.__db.session.commit()
+        # Commit records to database
+        self.__db.commit()
 
     def get_all_members(self) -> list:
         return self.__db.query(ClanMember).all()
