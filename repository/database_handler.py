@@ -13,6 +13,9 @@ class DatabaseHandler:
     def commit(self):
         self.session.commit()
 
+    def delete(self, obj):
+        self.session.delete(obj)
+
     def query(self, model):
         return self.session.query(model)
 
