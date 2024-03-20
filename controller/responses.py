@@ -14,7 +14,7 @@ class Responses:
                 + "/efficiency update - updates the efficiency ratings of every clan member\n"
                 + "/help - shows this help message\n"
                 + "/member + (clan member name or id) - shows the members stats\n"
-                + "/members - shows all the names of the members of your clan\n"
+                + "/members - shows all the names of the members of your clan and their efficiency\n"
                 + "/members + (clan tag) - shows the names of the members of the tagged clan\n"
                 + "/war update - makes a record of the current war and updates member stats when war has ended\n\n"
                 + "And more commands are on the way!"
@@ -51,10 +51,14 @@ class Responses:
 
         if message[0] == "/members" and (len(message) == 1 or len(message) == 2):
             if len(message) == 1:
-                return ", ".join(
+                return "\n".join(
                     [
-                        str(member.name) + str(member.efficiency)
-                        for member in self.clash_client.get_all_members()
+                        str(member.name) + "'s efficiency: " + str(member.efficiency)
+                        for member in sorted(
+                            self.clash_client.get_all_members(),
+                            key=lambda mem: mem.efficiency,
+                            reverse=True,
+                        )
                     ]
                 )
             else:
