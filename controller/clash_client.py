@@ -257,6 +257,10 @@ class ClashClient:
         total_attacks_used = 0
         weighted_stars = 0
 
+        # Return without accessing database if no war records are found
+        if total_wars < 1:
+            return
+
         # Update statistic for each war record the player has
         for record in war_records:
             # If the war record contains any attacks
