@@ -7,7 +7,14 @@ class Responses:
 
     def handle_response(self, message) -> str:
         if message == "/help":
-            return "I am a bot that can help you with your Clash of Clans stats!"
+            return ("I am a bot that can help you with your Clash of Clans stats!\n\n" +
+                    "You have access to the following commands:\n" +
+                    "/help - shows this help message\n" +
+                    "/member + (clan member name or id) - shows the members stats\n" +
+                    "/members - shows all the names of the members of your clan\n" +
+                    "/members + (clan tag) - shows the names of the members of the tagged clan\n" +
+                    "/war update - makes a record of the current war and updates member stats when war has ended\n\n" +
+                    "And more commands are on the way!")
 
         message = message.split()
 
