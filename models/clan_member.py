@@ -3,7 +3,7 @@ from repository.db_model import Base
 
 
 class ClanMember(Base):
-    __tablename__ = "clanmembers"
+    __tablename__ = "clan_members"
 
     id = Column(String, primary_key=True)
     name = Column(String, nullable=False)

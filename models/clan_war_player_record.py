@@ -5,7 +5,7 @@ from repository.db_model import Base
 
 
 class ClanWarPlayerRecord(Base):
-    __tablename__ = "clanwarplayerrecords"
+    __tablename__ = "clan_war_player_records"
 
     id = Column(UUID(as_uuid=True), unique=True, primary_key=True, default=uuid.uuid4)
     attacks_used = Column(SmallInteger, nullable=False)
