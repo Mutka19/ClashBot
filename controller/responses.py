@@ -31,4 +31,14 @@ class Responses:
                     message[1] = message[1][1:]
                 return ", ".join([member["name"] for member in self.clash_client.fetch_clan_members(message[1])])
 
+        if message[0] == "/war" and message[1] == "update":
+            # Check for any extra unwanted arguments
+            if len(message) > 2:
+                return "Unexpected argument(s) found, use /help for more information."
+
+            # Update war records in clash client
+            self.clash_client.record_war()
+
+            return "War record successfully updated."
+
         return "I didn't understand that. Please try again."
