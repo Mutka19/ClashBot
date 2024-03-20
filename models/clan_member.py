@@ -6,7 +6,7 @@ class ClanMember(Base):
     __tablename__ = "clan_members"
 
     id = Column(String, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, index=True)
     position = Column(String, nullable=False)
     ranking = Column(SmallInteger)
     efficiency = Column(Numeric(5, 2), default=100.00)
