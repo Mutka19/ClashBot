@@ -227,8 +227,16 @@ class ClashClient:
         self.__db.commit()
 
     def get_all_members(self) -> list:
+        # Get all past and current members in db
         member_history = self.__db.query(ClanMember).all()
-        return [member if member.position != "nonMember" else None for member in member_history]
+
+        # Add all members still in clan to active members list
+        active_members = []
+        for member in member_history:
+            if member.position != "nonMember":
+                active_members.append(member)
+
+        return active_members
 
     def get_member_by_id(self, member_id: str) -> ClanMember:
         return self.__db.query(ClanMember).filter(ClanMember.id == member_id).first()
