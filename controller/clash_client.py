@@ -179,7 +179,11 @@ class ClashClient:
             return
 
         # Query database to determine whether a record for this war already exists
-        query = self.__db.query(WarRecord).filter(WarRecord.id == war["opponent"]["tag"]).first()
+        query = (
+            self.__db.query(WarRecord)
+            .filter(WarRecord.id == war["opponent"]["tag"])
+            .first()
+        )
 
         # If there already exists a record, and it has a result, do not update database
         if query is not None and query.result is not None:
