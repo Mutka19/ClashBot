@@ -230,6 +230,17 @@ class ClashClient:
             .all()
         )
 
+    def update_clan_efficiency(self) -> None:
+        # Make a query to get all members of clan in database
+        members = self.get_all_members()
+
+        # Extract member ids from members list
+        member_ids = [member.id for member in members]
+
+        # Call update_efficiency for all members in clan database
+        for member_id in member_ids:
+            self.update_efficiency(member_id)
+
     def update_efficiency(self, member_id: str) -> None:
         # Query clan member by id
         member = self.__db.query(ClanMember).filter_by(id=member_id).first()
