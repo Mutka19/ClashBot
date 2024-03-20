@@ -210,6 +210,12 @@ class ClashClient:
     def get_all_members(self) -> list:
         return self.__db.query(ClanMember).all()
 
+    def get_member_by_id(self, member_id: str) -> ClanMember:
+        return self.__db.query(ClanMember).filter(ClanMember.id == member_id).first()
+
+    def get_member_by_name(self, name: str) -> ClanMember:
+        return self.__db.query(ClanMember).filter(ClanMember.name == name).first()
+
     def get_player_records(self, member_id: str) -> list:
         return (
             self.__db.query(ClanWarPlayerRecord)
