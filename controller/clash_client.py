@@ -67,7 +67,7 @@ class ClashClient:
         response = requests.get(url, headers=headers)
 
         # Return JSON for response
-        return response.json()
+        return response.json()["items"]
 
     def fetch_my_warlog(self) -> dict:
         # Check if clan_tag has been set, if not return empty list
@@ -145,9 +145,13 @@ class ClashClient:
         # Fetch current clan war stats
         war = self.fetch_current_clan_war(self.__clan_tag)
 
+        defenders = {}
+        for defender in war["opponent"]["members"]:
+            defenders[defender["tag"]] = defender["townhallLevel"]
+
         # For each member in clan war
         for member in war["clan"]["members"]:
-            # If the member attacked created a clanwarplayerrecord in database
+            # If the member attacked created a clan_war_player_record in database
             if "attacks" in member:
                 war_player_record = ClanWarPlayerRecord(
                     attacks_used=len(member["attacks"]),
@@ -159,12 +163,11 @@ class ClashClient:
 
                 # Make an attack record for each attack used in war
                 for attack in member["attacks"]:
-                    defender = war["opponent"]["members"][attack["defenderTag"]]
-                    self.__db.session.add_object(
+                    self.__db.add_object(
                         ClanWarAttackRecord(
                             stars=attack["stars"],
                             percentage=attack["destructionPercentage"],
-                            town_hall_diff=defender["townhallLevel"]
+                            town_hall_diff=defenders[attack["defenderTag"]]
                             - member["townhallLevel"],
                             cw_player_record_id=war_player_record.id,
                         )
@@ -193,7 +196,7 @@ class ClashClient:
         war = self.fetch_current_clan_war(self.__clan_tag)
 
         # Return without accessing db if clan is not in war, preparing for war or war ended
-        if war["state"] not in ["inWar", "preparation", "ended"]:
+        if war["state"] not in ["inWar", "preparation", "warEnded"]:
             print("No War")
             return
 
@@ -216,8 +219,9 @@ class ClashClient:
         )
 
         # If war has ended and hs result update war record and create player records
-        if war["state"] == "ended":
-            war_record.result = war["result"]
+        if war["state"] == "warEnded":
+            print("war ended")
+            war_record.result = self.fetch_my_warlog()[0]["result"]
             self.record_player_clan_war_stats()
 
         # Add war record to database
