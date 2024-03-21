@@ -57,6 +57,8 @@ class Responses:
                 self.clash_client.delete_commit()
 
             except:
+                # Cancel deletion if error occurs
+                self.clash_client.delete_cancel()
                 return (
                     "An error occurred while trying to delete records. Please try again"
                 )
