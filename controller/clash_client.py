@@ -367,5 +367,8 @@ class ClashClient:
     def delete_player_record_obj(self, player_record: ClanWarPlayerRecord) -> None:
         self.__db.delete(player_record)
 
+    def delete_cancel(self):
+        self.__db.rollback()
+
     def delete_commit(self):
         self.__db.commit()
