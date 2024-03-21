@@ -10,17 +10,58 @@ class Responses:
             return (
                 "I am a bot that can help you with your Clash of Clans stats!\n\n"
                 + "You have access to the following commands:\n"
+                + "/banish {clan member name or ID} - deletes all records of this player from the database\n"
                 + "/clan update - updates the clans member database\n"
                 + "/efficiency update - updates the efficiency ratings of every clan member\n"
                 + "/help - shows this help message\n"
-                + "/member + (clan member name or id) - shows the members stats\n"
+                + "/member + {clan member name or ID} - shows the members stats\n"
                 + "/members - shows all the names of the members of your clan and their efficiency\n"
-                + "/members + (clan tag) - shows the names of the members of the tagged clan\n"
+                + "/members + {clan tag} - shows the names of the members of the tagged clan\n"
                 + "/war update - makes a record of the current war and updates member stats when war has ended\n\n"
                 + "And more commands are on the way!"
             )
 
         message = message.split()
+
+        if message[0] == "/banish":
+            if len(message) < 2:
+                return "You must provide a name or ID to banish."
+
+            member = None
+            if message[1][0] == "#":
+                member = self.clash_client.get_member_by_id(message[1][1:])
+            else:
+                member = self.clash_client.get_member_by_name(message[1])
+
+            if member is None:
+                return "Member not found in database."
+
+            try:
+                player_records = self.clash_client.get_player_records(member.id)
+
+                for record in player_records:
+                    # Query for attack objects using player record id
+                    attacks = self.clash_client.get_attack_records(record.id)
+
+                    for attack in attacks:
+                        # Delete attack(s)
+                        self.clash_client.delete_attack_record_obj(attack)
+
+                    # Delete player record(s)
+                    self.clash_client.delete_player_record_obj(record)
+
+                # Delete member record
+                self.clash_client.delete_member_record_obj(member)
+
+                # Confirm deletion
+                self.clash_client.delete_commit()
+
+            except:
+                return (
+                    "An error occurred while trying to delete records. Please try again"
+                )
+
+            return f"Banish member {member.name}"
 
         if message[0] == "/clan" and message[1] == "update":
             self.clash_client.record_clan_members()
@@ -38,6 +79,7 @@ class Responses:
             else:
                 member = self.clash_client.get_member_by_name(message[1])
 
+            member_string = None
             if member:
                 member_string = (
                     f"Name: {member.name}\n"
@@ -53,7 +95,7 @@ class Responses:
             if len(message) == 1:
                 return "\n".join(
                     [
-                        str(member.name) + "'s efficiency: " + str(member.efficiency)
+                        f"{member.name}'s efficiency & participation: {member.efficiency}, {member.participation}"
                         for member in sorted(
                             self.clash_client.get_all_members(),
                             key=lambda mem: mem.efficiency,
