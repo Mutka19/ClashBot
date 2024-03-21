@@ -197,7 +197,6 @@ class ClashClient:
 
         # Return without accessing db if clan is not in war, preparing for war or war ended
         if war["state"] not in ["inWar", "preparation", "warEnded"]:
-            print("No War")
             return
 
         # Query database to determine whether a record for this war already exists
@@ -220,7 +219,6 @@ class ClashClient:
 
         # If war has ended and hs result update war record and create player records
         if war["state"] == "warEnded":
-            print("war ended")
             war_record.result = self.fetch_my_warlog()[0]["result"]
             self.record_player_clan_war_stats()
 
