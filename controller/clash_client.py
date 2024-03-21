@@ -1,3 +1,4 @@
+import uuid
 import requests
 import os
 from dateutil import parser
@@ -246,11 +247,25 @@ class ClashClient:
     def get_member_by_name(self, name: str) -> ClanMember:
         return self.__db.query(ClanMember).filter(ClanMember.name == name).first()
 
+    def get_player_record(self, record_id):
+        return (
+            self.__db.query(ClanWarPlayerRecord)
+            .filter(ClanWarPlayerRecord.id == record_id)
+            .first()
+        )
+
     def get_player_records(self, member_id: str) -> list:
         return (
             self.__db.query(ClanWarPlayerRecord)
             .filter(ClanWarPlayerRecord.member_id == member_id)
             .all()
+        )
+
+    def get_attack_record(self, attack_id):
+        return (
+            self.__db.query(ClanWarAttackRecord)
+            .filter(ClanWarAttackRecord.id == attack_id)
+            .first()
         )
 
     def get_attack_records(self, cw_player_record_id: str) -> list:
@@ -332,4 +347,25 @@ class ClashClient:
         member.efficiency = min(100.00, efficiency)
 
         # Commit changes in member participation to database
+        self.__db.commit()
+
+    def delete_attack_record_by_id(self, attack_id: uuid.UUID) -> None:
+        self.__db.delete(self.get_attack_record(attack_id))
+
+    def delete_attack_record_obj(self, attack: ClanWarAttackRecord) -> None:
+        self.__db.delete(attack)
+
+    def delete_member_by_id(self, member_id: str) -> None:
+        self.__db.delete(self.get_member_by_id(member_id))
+
+    def delete_member_record_obj(self, member: ClanMember) -> None:
+        self.__db.delete(member)
+
+    def delete_player_record_by_id(self, record_id: uuid.UUID) -> None:
+        self.__db.delete(self.get_player_record(record_id))
+
+    def delete_player_record_obj(self, player_record: ClanWarPlayerRecord) -> None:
+        self.__db.delete(player_record)
+
+    def delete_commit(self):
         self.__db.commit()
