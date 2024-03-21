@@ -10,6 +10,9 @@ class DatabaseHandler:
     def add_object(self, obj):
         self.session.add(obj)
 
+    def rollback(self):
+        self.session.rollback()
+
     def commit(self):
         self.session.commit()
 
