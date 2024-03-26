@@ -329,6 +329,7 @@ class ClashClient:
                 for attack in attacks:
                     # Get town hall difference between attacker and defender
                     diff = attack.town_hall_diff
+
                     # If member attacked a town hall that is 2+ levels higher than their own
                     if diff > 1:
                         # Reward player by weighing stars earned higher
@@ -346,10 +347,10 @@ class ClashClient:
         participation = 100 * float(total_attacks_used) / (total_wars * 2)
 
         # Get stars (weighted stars earned) / (total potential stars)
-        stars = float(weighted_stars) / (total_wars * 6)
+        stars = 100 * float(weighted_stars) / (total_wars * 6)
 
         # Efficiency = (participation * 0.5) + (stars * 0.5)
-        efficiency = 100 * (participation + stars) / 2
+        efficiency = (participation + stars) / 2
 
         # Updated member participation and efficiency
         member.participation = min(100.00, participation)
