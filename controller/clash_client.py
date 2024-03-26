@@ -138,13 +138,14 @@ class ClashClient:
         self.__db.commit()
 
     # Record percentage of attacks player has used in wars
-    def record_player_clan_war_stats(self) -> None:
+    def record_player_clan_war_stats(self, war=None) -> None:
         # Return immediately if no clan tag has been set
         if self.__clan_tag is None:
             return
 
         # Fetch current clan war stats
-        war = self.fetch_current_clan_war(self.__clan_tag)
+        if war is None:
+            war = self.fetch_current_clan_war(self.__clan_tag)
 
         defenders = {}
         for defender in war["opponent"]["members"]:
@@ -162,6 +163,9 @@ class ClashClient:
                     war_id=war["opponent"]["tag"],
                 )
 
+                self.__db.add_object(war_player_record)
+                self.__db.flush()
+
                 # Make an attack record for each attack used in war
                 for attack in member["attacks"]:
                     self.__db.add_object(
@@ -177,9 +181,11 @@ class ClashClient:
                     # Increment total stars in clan war player record
                     war_player_record.stars += attack["stars"]
 
+                self.__db.add_object(war_player_record)
+
             # If no attacks were made in war create an according clan war player record
             else:
-                self.__db.session.add_object(
+                self.__db.add_object(
                     ClanWarPlayerRecord(
                         attacks_used=0,
                         stars=0,
@@ -189,16 +195,19 @@ class ClashClient:
                     )
                 )
 
-            # Commit all records to database
-            self.__db.session.commit()
+        # Commit all records to database
+        self.__db.commit()
 
     def record_war(self) -> None:
         # Fetch current war with clash of clans api
         war = self.fetch_current_clan_war(self.__clan_tag)
 
+        if "reason" in war:
+            raise IOError("Could not fetch clan war")
+
         # Return without accessing db if clan is not in war, preparing for war or war ended
         if war["state"] not in ["inWar", "preparation", "warEnded"]:
-            return
+            raise IOError("No war available to record")
 
         # Query database to determine whether a record for this war already exists
         query = (
@@ -209,7 +218,7 @@ class ClashClient:
 
         # If there already exists a record, and it has a result, do not update database
         if query is not None and query.result is not None:
-            return
+            raise LookupError("War record already exists")
 
         # Create war record with null result
         war_record = WarRecord(
@@ -221,7 +230,7 @@ class ClashClient:
         # If war has ended and hs result update war record and create player records
         if war["state"] == "warEnded":
             war_record.result = self.fetch_my_warlog()[0]["result"]
-            self.record_player_clan_war_stats()
+            self.record_player_clan_war_stats(war)
 
         # Add war record to database
         self.__db.add_object(war_record)
