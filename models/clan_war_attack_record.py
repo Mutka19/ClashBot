@@ -12,5 +12,5 @@ class ClanWarAttackRecord(Base):
     percentage = Column(Numeric(5, 2), nullable=False)
     town_hall_diff = Column(SmallInteger, nullable=False)
     cw_player_record_id = Column(
-        String, ForeignKey("ClanWarPlayerRecords.id"), nullable=False, index=True
+        String, ForeignKey("clan_war_player_records.id"), nullable=False, index=True
     )

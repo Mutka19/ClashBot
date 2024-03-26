@@ -12,4 +12,4 @@ class ClanWarPlayerRecord(Base):
     stars = Column(SmallInteger, nullable=False)
     record_status = Column(String, nullable=False)
     war_id = Column(String, index=True)
-    member_id = Column(String, ForeignKey("ClanMembers.id"), nullable=False, index=True)
+    member_id = Column(String, ForeignKey("clan_members.id"), nullable=False, index=True)
