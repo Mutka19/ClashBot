@@ -19,6 +19,9 @@ class DatabaseHandler:
     def delete(self, obj):
         self.session.delete(obj)
 
+    def flush(self):
+        self.session.flush()
+
     def query(self, model):
         return self.session.query(model)
 
