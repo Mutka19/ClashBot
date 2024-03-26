@@ -100,7 +100,7 @@ class Responses:
                         f"{member.name}'s efficiency & participation: {member.efficiency}, {member.participation}"
                         for member in sorted(
                             self.clash_client.get_all_members(),
-                            key=lambda mem: mem.efficiency,
+                            key=lambda mem: (mem.efficiency, mem.participation),
                             reverse=True,
                         )
                     ]
