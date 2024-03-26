@@ -9,5 +9,5 @@ class ClanMember(Base):
     name = Column(String, nullable=False, index=True)
     position = Column(String, nullable=False)
     ranking = Column(SmallInteger)
-    efficiency = Column(Numeric(5, 2), default=100.00)
+    efficiency = Column(Numeric(5, 2), default=0.00)
     participation = Column(Numeric(5, 2), default=100.00)
