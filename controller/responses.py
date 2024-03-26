@@ -132,8 +132,12 @@ class Responses:
             if len(message) > 2:
                 return "Unexpected argument(s) found, use /help for more information."
 
-            # Update war records in clash client
-            self.clash_client.record_war()
+            try:
+                # Try updating war records with clash client
+                self.clash_client.record_war()
+            except Exception as e:
+                # Return exception description if recording war fails
+                return f"{e}"
 
             return "War record successfully updated."
 
