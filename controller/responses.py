@@ -5,7 +5,7 @@ class Responses:
     def __init__(self, clash_client: ClashClient):
         self.clash_client = clash_client
 
-    def handle_response(self, message) -> str:
+    def handle_response(self, message, roles) -> str:
         if message == "/help":
             return (
                 "I am a bot that can help you with your Clash of Clans stats!\n\n"
@@ -24,6 +24,12 @@ class Responses:
         message = message.split()
 
         if message[0] == "/banish":
+            # Check if user has required privileges to run this command
+            if not any(
+                role.name in ["Master Builder", "Leader", "Coleader"] for role in roles
+            ):
+                return "You dont have sufficient privileges to run this command"
+
             if len(message) < 2:
                 return "You must provide a name or ID to banish."
 
@@ -66,10 +72,22 @@ class Responses:
             return f"Banish member {member.name}"
 
         if message[0] == "/clan" and message[1] == "update":
+            # Check if user has required privileges to run this command
+            if not any(
+                role.name in ["Master Builder", "Leader", "Coleader", "Elder"]
+                for role in roles
+            ):
+                return "You dont have sufficient privileges to run this command"
             self.clash_client.record_clan_members()
             return "Clan database updated."
 
         if message[0] == "/efficiency" and message[1] == "update":
+            # Check if user has required privileges to run this command
+            if not any(
+                role.name in ["Master Builder", "Leader", "Coleader", "Elder"]
+                for role in roles
+            ):
+                return "You dont have sufficient privileges to run this command"
             if len(message) == 2:
                 self.clash_client.update_clan_efficiency()
             return "Clan Efficiency has been updated."
@@ -94,6 +112,13 @@ class Responses:
             return member_string if member is not None else "Member not found."
 
         if message[0] == "/members" and (len(message) == 1 or len(message) == 2):
+            # Check if user has required privileges to run this command
+            if not any(
+                role.name in ["Master Builder", "Leader", "Coleader", "Elder"]
+                for role in roles
+            ):
+                return "You dont have sufficient privileges to run this command"
+
             if len(message) == 1:
                 return "\n".join(
                     [
@@ -116,6 +141,12 @@ class Responses:
                 )
 
         if message[0] == "/setup" and len(message) == 2:
+            # Check if user has required privileges to run this command
+            if not any(
+                role.name in ["Master Builder", "Leader", "Coleader"] for role in roles
+            ):
+                return "You dont have sufficient privileges to run this command"
+
             # If hashtag on clan tag remove it and continue
             if message[1][0] == "#":
                 message[1] = message[1][1:]
@@ -128,6 +159,13 @@ class Responses:
                 return "Clan found and set."
 
         if message[0] == "/war" and message[1] == "update":
+            # Check if user has required privileges to run this command
+            if not any(
+                role.name in ["Master Builder", "Leader", "Coleader", "Elder"]
+                for role in roles
+            ):
+                return "You dont have sufficient privileges to run this command"
+
             # Check for any extra unwanted arguments
             if len(message) > 2:
                 return "Unexpected argument(s) found, use /help for more information."
