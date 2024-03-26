@@ -1,4 +1,3 @@
-import bot
 from controller.bot import Bot
 
 
