@@ -343,13 +343,13 @@ class ClashClient:
                         weighted_stars += max(0, attack.stars + diff)
 
         # Get participation (attacks used) / (total potential attacks)
-        participation = float(total_attacks_used) / (total_wars * 2)
+        participation = 100 * float(total_attacks_used) / (total_wars * 2)
 
         # Get stars (weighted stars earned) / (total potential stars)
         stars = float(weighted_stars) / (total_wars * 6)
 
         # Efficiency = (participation * 0.5) + (stars * 0.5)
-        efficiency = (participation + stars) / 2
+        efficiency = 100 * (participation + stars) / 2
 
         # Updated member participation and efficiency
         member.participation = min(100.00, participation)
